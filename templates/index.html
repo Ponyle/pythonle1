@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>首页</title>
+    <link rel="shortcut icon" href="/static/img/hhstu.jpg" type="image/x-icon"/>
+    <link rel="stylesheet" href="/static/bootstrap/css/bootstrap.css">
+    <script src="/static/js/jquery.js"></script>
+    <script src="/static/bootstrap/js/bootstrap.js"></script>
+    <style>
+
+
+        .desc {
+            text-align: justify;
+        }
+
+        .info {
+            margin-top: 10px;
+        }
+
+        h5 a {
+            color: #105cb6;
+            font-size: 14px;
+            font-weight: bold;
+            text-decoration: none;
+        }
+
+        .diggit {
+            float: left;
+            margin-right: 20px;
+            width: 46px;
+            height: 52px;
+            background-image: url('/static/img/upup.gif');
+        }
+
+        .diggnum {
+            position: relative;
+            top: 6px;
+            left: 20px;
+        }
+
+    </style>
+</head>
+<body>
+<nav class="navbar navbar-default">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
+                    data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/index/">乐博园</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav">
+                <li class="active"><a href="/index/">首页 <span class="sr-only">(current)</span></a></li>
+                {#                <li><a href="#">博问</a></li>#}
+
+            </ul>
+
+            <ul class="nav navbar-nav navbar-right">
+                {% if request.user.username %}
+                    <li><a href="/{{ request.user.username }}"><span
+                            class="glyphicon glyphicon-user"></span>&nbsp;{{ request.user.username }}</a>
+                    </li>
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
+                           aria-expanded="false">管理<span class="caret"></span></a>
+                        <ul class="dropdown-menu">
+                            <li><a href="/admin/password_change/">修改密码</a></li>
+                            <li><a href="/admin/blog/userinfo/">个人信息</a></li>
+                            <li><a href="/backend/">后台管理</a></li>
+                            <li><a href="/logout/">注销</a></li>
+                            <li role="separator" class="divider"></li>
+                        </ul>
+                    </li>
+
+                {% else %}
+                    <li><a href="/login/">登陆</a></li>
+                    <li><a href="/zhuce/">注册</a></li>
+                {% endif %}
+
+
+            </ul>
+        </div><!-- /.navbar-collapse -->
+    </div><!-- /.container-fluid -->
+</nav>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-3">
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <h3 class="panel-title">文章搜索</h3>
+                </div>
+                <form action="" method="post">
+                <div class="panel-body">
+                    <input type="text" id="result" name="msg"><button id="cal">查询</button>
+                </div>
+                </form>
+            </div>
+            <div class="panel panel-danger">
+                <div class="panel-heading">
+                    <h3 class="panel-title">文章发布</h3>
+                </div>
+                <div class="panel-body">
+                    <p><a href="/backend/add_article/">发布文章</a></p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="article_list">
+                {% if num < 1 or num > num1 %}
+                    {% for article in article_list %}
+
+                    {#                    <div class="diggit">#}
+                    {#                        <span class="diggnum">0</span>#}
+                    {#                    </div>#}
+                    <div class="article_item">
+
+                        <h5><a href="/{{ article.user.username }}/articles/{{ article.pk }}">{{ article.title }}</a>
+                        </h5>
+                        <div>
+                            <span class="media-left"><a href="/{{ article.user.username }}"><img width="48" height="48"
+                                                                                                 src="/{{ article.user.avatar }}"
+                                                                                                 alt=""></a></span>
+                            <span class="media-right small desc ">
+                              {{ article.desc }}
+                          </span>
+
+                        </div>
+                        <div class="info small">
+                            <span><a href="/{{ article.user.username }}">{{ article.user.username }}</a> </span> &nbsp;
+                            发布于 <span>{{ article.create_time|date:'Y-m-d H:i' }}    </span>&nbsp;&nbsp;
+                            <img src="/static/img/icon_comment.gif" alt=""><a
+                                href="/{{ article.user.username }}/articles/{{ article.pk }}">评论({{ article.comment_count }})</a>&nbsp;&nbsp;
+                            <span class="glyphicon glyphicon-thumbs-up"></span><a
+                                href="/{{ article.user.username }}/articles/{{ article.pk }}">点赞({{ article.up_count }})</a>
+                        </div>
+                    </div>
+                    <hr>
+                {% endfor %}
+                    <nav aria-label="Page navigation">
+                <ul class="pagination">
+                    <li><a href="?page=1" aria-label="Previous"><span aria-hidden="true">首页</span></a></li>
+
+                    {#has_previous 判断是否有上一页#}
+                    {% if article_list.has_previous %}
+                        {#previous_page_number 上一页的页码#}
+                        <li><a href="?page={{ article_list.previous_page_number }}" aria-label="Previous"><span
+                                aria-hidden="true">上一页</span></a></li>
+                    {% else %}
+                        {#class="disabled" 禁止用户点击#}
+                        <li class="disabled"><a href="" aria-label="Previous"><span aria-hidden="true">上一页</span></a>
+                        </li>
+                    {% endif %}
+
+                    {#遍历页码的列表#}
+                    {% for i in pageRange %}
+                        {#判断当前页码数等于底部页码时#}
+                        {% if current_num == i %}
+                            {#增加class,加深按钮#}
+                            <li class="active"><a href="?page={{ i }}">{{ i }}</a></li>
+                        {% else %}
+                            {#href参数为简写,它会自动获取当前路径，并拼接参数#}
+                            <li><a href="?page={{ i }}">{{ i }}</a></li>
+                        {% endif %}
+
+                    {% endfor %}
+
+                    {#has_next 判断是否有下一页#}
+                    {% if article_list.has_next %}
+                        {#next_page_number 下一页的页码#}
+                        <li><a href="?page={{ article_list.next_page_number }}" aria-label="Next"><span
+                                aria-hidden="true">下一页</span></a></li>
+                    {% else %}
+                        {#class="disabled" 禁止用户点击#}
+                        <li class="disabled"><a href="" aria-label="Next"><span aria-hidden="true">下一页</span></a></li>
+                    {% endif %}
+
+                    <li><a href="?page={{ paginator.num_pages }}" aria-label="Next"><span
+                            aria-hidden="true">尾页</span></a>
+                    </li>
+
+                </ul>
+            </nav>
+                {% else %}
+                     {% for article in article_list1 %}
+                    {#                    <div class="diggit">#}
+                    {#                        <span class="diggnum">0</span>#}
+                    {#                    </div>#}
+                    <div class="article_item">
+
+                        <h5><a href="/{{ article.user.username }}/articles/{{ article.pk }}">{{ article.title }}</a>
+                        </h5>
+                        <div>
+                            <span class="media-left"><a href="/{{ article.user.username }}"><img width="48" height="48"
+                                                                                                 src="/{{ article.user.avatar }}"
+                                                                                                 alt=""></a></span>
+                            <span class="media-right small desc ">
+                              {{ article.desc }}
+                          </span>
+
+                        </div>
+                        <div class="info small">
+                            <span><a href="/{{ article.user.username }}">{{ article.user.username }}</a></span> &nbsp;
+                            发布于 <span>{{ article.create_time|date:'Y-m-d H:i' }}</span>&nbsp;&nbsp;
+                            <img src="/static/img/icon_comment.gif" alt=""><a
+                                href="/{{ article.user.username }}/articles/{{ article.pk }}">评论({{ article.comment_count }})</a>&nbsp;&nbsp;
+                            <span class="glyphicon glyphicon-thumbs-up"></span><a
+                                href="/{{ article.user.username }}/articles/{{ article.pk }}">点赞({{ article.up_count }})</a>
+                        </div>
+                    </div>
+                    <hr>
+                {% endfor %}
+
+
+                {% endif %}
+            </div>
+            {#分页展示#}
+
+        </div>
+        <div class="col-md-3">
+
+            <div class="panel panel-warning">
+                <div class="panel-heading">
+                    <h3 class="panel-title">评论排行榜</h3>
+                </div>
+                <table style="border-collapse:separate; border-spacing:10px;">
+                {% if msg > 0 %}
+                    {% for i in result %}
+                    <tr>
+                        <td> <a href="/{{ i.user.username }}/articles/{{ i.pk }}" style="color: #000;font-size: 16px">{{ forloop.counter }}.{{ i.title }}({{ i.comment_count }})</a> </td>
+                    </tr>
+                  {% endfor %}
+                    </table>
+                {% else %}
+                    <tr>
+                    <td align="center" class="panel-title">暂无评论，赶紧去评论吧！</td>
+                    </tr>
+                    </table>
+
+                {% endif %}
+            </div>
+            <div class="panel panel-info">
+                <div class="panel-heading">
+                    <h3 class="panel-title">推荐排行榜</h3>
+                </div>
+
+                 <table style="border-collapse:separate; border-spacing:10px;">
+                    {% if msg1 > 0 %}
+                    {% for i in result2 %}
+                    <tr>
+                        <td> <a href="/{{ i.user.username }}/articles/{{ i.pk }}" style="color: #000;font-size: 16px">{{ forloop.counter }}.{{ i.title }}({{ i.up_count }})</a> </td>
+                    </tr>
+                  {% endfor %}
+                    </table>
+                {% else %}
+                    <tr>
+                    <td align="center" class="panel-title">暂无推荐，赶紧去推荐吧！</td>
+                    </tr>
+                    </table>
+
+                {% endif %}
+            </div>
+
+
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
